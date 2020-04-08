@@ -1,10 +1,7 @@
-open Ast;;
 
 exception EnvironmentError of string;;
 
 let raiseErr msg = raise (EnvironmentError (String.concat " " msg))
-
-type env = (string * value) list;;
 
 let emptyenv = (0, []);;
 

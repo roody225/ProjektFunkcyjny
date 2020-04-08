@@ -5,6 +5,13 @@ exception RunTimeError of string;;
 
 let raiseErr msg = raise (RunTimeError (String.concat " " msg))
 
+let rec mapargs argslist argsvals env =
+  let (numel, vars) = env in
+  match (argslist, argsvals) with
+    | ([], []) -> env
+    | (name::alist, vval::aval) -> mapargs alist aval (numel+1, (name, vval)::vars)
+    | (_, _) -> raiseErr ["too few/many arguments in a function!"];;
+
 let rec eval expr env = 
   match expr with
     | Const c -> c
@@ -46,9 +53,12 @@ let rec eval expr env =
                       | _ -> raiseErr ["Bad argument in == operator!"])
     | Not e -> (match eval e env with 
                   | BoolVal b -> BoolVal (not b)
-                  | _ -> raiseErr ["Bad argiment in ! operator!"]);;
-
-let rec interp progtree env =
+                  | _ -> raiseErr ["Bad argiment in ! operator!"])
+    | EvalProc (name, argsvals) -> (match envlookup name env with 
+                                     | Procedure (argslist, returnval, body, closure) ->
+                                       eval returnval (interp body (mapargs argslist (List.map (fun a -> eval a env) argsvals) closure))
+                                     | _ -> raiseErr [name; "is not a procedure!"])
+and interp progtree env =
   let (numel, _) = env in
   match progtree with
     | Skip -> env
@@ -63,7 +73,8 @@ let rec interp progtree env =
                                 | BoolVal b -> (if b then
                                                   interp t env
                                                 else
-                                                  interp f env))
+                                                  interp f env)
+                                | Procedure _ -> raiseErr ["Run Time Error"])
     | WhileExpr (cond, body) -> envcut numel (match eval cond env with
                                   | NumberVal v -> (if v <> 0 then
                                                       interp (WhileExpr (cond, body)) (interp body env)
@@ -72,8 +83,9 @@ let rec interp progtree env =
                                   | BoolVal b -> (if b then
                                                     interp (WhileExpr (cond, body)) (interp body env)
                                                   else
-                                                    env));;
+                                                    env)
+                                  | Procedure _ -> raiseErr ["Run Time Error"])
+    | DeclareProcExpr (name, args, returnexpr, body) -> envadd name (Procedure (args, returnexpr, body, env)) env;;
 
 let interp_file filename = 
   interp (Syntax.Parser.parse_file filename) emptyenv;;
-

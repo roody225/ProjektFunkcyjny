@@ -27,6 +27,9 @@ open Ast
 %token LET
 %token EQUALS
 %token EOF
+%token PROCEDURE
+%token COMMA
+%token COLLON
 
 %right NOT
 %left LEQ GEQ LT GT EQ
@@ -53,12 +56,30 @@ aexpr:
   | e1 = aexpr; FRONTSLASH; e2 = aexpr { Div (e1, e2) }
   | e1 = aexpr; TIMES; e2 = aexpr { Mult (e1, e2) }
   | NOT; e = aexpr { Not e }
+  | x = ID; al = argslist { EvalProc (x, al) }
+
+argslist:
+  | LPAREN; RPAREN { [] }
+  | LPAREN; a = args; RPAREN { a }
+
+args:
+  | e = aexpr { [e] }
+  | e = aexpr; COMMA; a = args { e::a }
 
 pexpr: 
   | LET; x = ID; EQUALS; e1 = aexpr; SEMICOLON { AssignExpr (x, e1) }
   | x = ID; EQUALS; e = aexpr; SEMICOLON { SubstExpr (x, e) }
   | IF; e = aexpr; e1 = block; ELSE; e2 = block; SEMICOLON { IfExpr (e, e1, e2) }
   | WHILE; e = aexpr; e1 = block; SEMICOLON { WhileExpr (e, e1) }
+  | PROCEDURE; x = ID; dal = dargslist; COLLON; e = aexpr; e1 = block; SEMICOLON { DeclareProcExpr (x, dal, e, e1) }
+ 
+dargslist: 
+  | LPAREN; RPAREN { [] }
+  | LPAREN; da = dargs; RPAREN { da }
+
+dargs:
+  | x = ID { [x] }
+  | x = ID; COMMA; da = dargs { x::da } 
 
 block:
   | LBRACE; RBRACE { Skip }

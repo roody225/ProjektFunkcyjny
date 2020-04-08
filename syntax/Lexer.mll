@@ -33,6 +33,9 @@ rule read =
   | "!"   { NOT }
   | "{"   { LBRACE }
   | "}"   { RBRACE }
+  | "procedure" { PROCEDURE }
+  | ","   { COMMA }
+  | ":"   { COLLON }
   | id    { ID (Lexing.lexeme lexbuf) }
   | int   { INT (int_of_string (Lexing.lexeme lexbuf)) }
   | eof   { EOF }

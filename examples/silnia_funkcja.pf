@@ -1,0 +1,14 @@
+procedure silnia(n) : res {
+  let res = 1;
+  while(0 < n){
+    res = res * n;
+    n = n - 1;
+  };
+};
+procedure silniadwa(n) : x * silnia(n){
+  let x = silnia(n);
+};
+let x = silnia(6);
+let y = silniadwa(3);
+let z = silnia(6) + silniadwa(3);
+silnia = 14;
