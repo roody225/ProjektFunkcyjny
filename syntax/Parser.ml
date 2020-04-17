@@ -13,5 +13,3 @@ let parse_file filename =
 let parse_string source =
   let lexbuf = Lexing.from_string source in
   parse lexbuf;;
-
-(* let silnia = parse_file "przyklady/silnia.pf";; *)
