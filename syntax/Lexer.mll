@@ -36,6 +36,10 @@ rule read =
   | "procedure" { PROCEDURE }
   | ","   { COMMA }
   | ":"   { COLLON }
+  | "struct" { STRUCT }
+  | "."   { DOT }
+  | "null" { NULL }
+  | "with" { WITH }
   | id    { ID (Lexing.lexeme lexbuf) }
   | int   { INT (int_of_string (Lexing.lexeme lexbuf)) }
   | eof   { EOF }

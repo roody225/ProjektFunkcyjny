@@ -10,7 +10,7 @@ let rec mapargs argslist argsvals env =
   match (argslist, argsvals) with
     | ([], []) -> env
     | (name::alist, vval::aval) -> mapargs alist aval (numel+1, (name, vval)::vars)
-    | (_, _) -> raiseErr ["too few/many arguments in a function!"];;
+    | (_, _) -> raiseErr ["too few/many arguments in a function/struct!"];;
 
 let rec eval expr env = 
   match expr with
@@ -58,6 +58,13 @@ let rec eval expr env =
                                      | Procedure (argslist, returnval, body, closure) ->
                                        eval returnval (interp body (mapargs argslist (List.map (fun a -> eval a env) argsvals) closure))
                                      | _ -> raiseErr [name; "is not a procedure!"])
+    | MakeStruct (name, fieldsvals) -> (match envlookup name env with
+                                         | StructTemplate (fields) ->
+                                           StructVal (mapargs fields (List.map (fun a -> eval a env) fieldsvals) emptyenv)
+                                         | _ -> raiseErr [name; "does not name a struct!"])
+    | GetStructField (name, field) -> (match envlookup name env with
+                                        | StructVal (fields) -> eval field fields
+                                        | _ -> raiseErr [name; "is not a struct!"])
 and interp progtree env =
   let (numel, _) = env in
   match progtree with
@@ -74,7 +81,7 @@ and interp progtree env =
                                                   interp t env
                                                 else
                                                   interp f env)
-                                | Procedure _ -> raiseErr ["Run Time Error"])
+                                | _ -> interp f env)
     | WhileExpr (cond, body) -> envcut numel (match eval cond env with
                                   | NumberVal v -> (if v <> 0 then
                                                       interp (WhileExpr (cond, body)) (interp body env)
@@ -84,8 +91,9 @@ and interp progtree env =
                                                     interp (WhileExpr (cond, body)) (interp body env)
                                                   else
                                                     env)
-                                  | Procedure _ -> raiseErr ["Run Time Error"])
-    | DeclareProcExpr (name, args, returnexpr, body) -> envadd name (Procedure (args, returnexpr, body, env)) env;;
+                                  | _ -> env)
+    | DeclareProcExpr (name, args, returnexpr, body) -> envadd name (Procedure (args, returnexpr, body, env)) env
+    | DeclareStructExpr (name, fields) -> envadd name (StructTemplate fields) env;;
 
 let interp_file filename = 
   interp (Syntax.Parser.parse_file filename) emptyenv;;

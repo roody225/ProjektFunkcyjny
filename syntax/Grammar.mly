@@ -30,6 +30,10 @@ open Ast
 %token PROCEDURE
 %token COMMA
 %token COLLON
+%token STRUCT
+%token DOT
+%token NULL
+%token WITH
 
 %right NOT
 %left LEQ GEQ LT GT EQ
@@ -42,6 +46,7 @@ open Ast
 
 aexpr:
   | LPAREN; e = aexpr; RPAREN { e }
+  | NULL { Const (Null) }
   | i = INT { Const (NumberVal i) }
   | TRUE { Const (BoolVal true) }
   | FALSE { Const (BoolVal false) }
@@ -57,6 +62,12 @@ aexpr:
   | e1 = aexpr; TIMES; e2 = aexpr { Mult (e1, e2) }
   | NOT; e = aexpr { Not e }
   | x = ID; al = argslist { EvalProc (x, al) }
+  | x = ID; WITH; al = argslist { MakeStruct (x, al) }
+  | x = getstructf; { x }
+
+getstructf:
+  | x = ID; DOT; y = ID {GetStructField (x, Var y)}
+  | x = ID; DOT; e = getstructf { GetStructField (x, e) }
 
 argslist:
   | LPAREN; RPAREN { [] }
@@ -72,6 +83,15 @@ pexpr:
   | IF; e = aexpr; e1 = block; ELSE; e2 = block; SEMICOLON { IfExpr (e, e1, e2) }
   | WHILE; e = aexpr; e1 = block; SEMICOLON { WhileExpr (e, e1) }
   | PROCEDURE; x = ID; dal = dargslist; COLLON; e = aexpr; e1 = block; SEMICOLON { DeclareProcExpr (x, dal, e, e1) }
+  | STRUCT; x = ID; sb = structbody; SEMICOLON {DeclareStructExpr (x, sb)}
+
+structbody:
+  | LBRACE; RBRACE { [] }
+  | LBRACE; m = structmembers; RBRACE { m }
+
+structmembers:
+  | x = ID { [x] }
+  | x = ID; COMMA; rest = structmembers { x::rest }
  
 dargslist: 
   | LPAREN; RPAREN { [] }
