@@ -28,5 +28,6 @@ and pexpr =
   | WhileExpr of aexpr * pexpr
   | DeclareProcExpr of string * string list * aexpr * pexpr
   | DeclareStructExpr of string * string list
+  | SubstStructExpr of aexpr * aexpr
   | Comb of pexpr * pexpr
   | Skip;;

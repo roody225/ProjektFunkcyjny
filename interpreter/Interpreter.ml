@@ -93,7 +93,8 @@ and interp progtree env =
                                                     env)
                                   | _ -> env)
     | DeclareProcExpr (name, args, returnexpr, body) -> envadd name (Procedure (args, returnexpr, body, env)) env
-    | DeclareStructExpr (name, fields) -> envadd name (StructTemplate fields) env;;
+    | DeclareStructExpr (name, fields) -> envadd name (StructTemplate fields) env
+    | SubstStructExpr (s, vval) -> envstructsubst s (eval vval env) env;;
 
 let interp_file filename = 
   interp (Syntax.Parser.parse_file filename) emptyenv;;

@@ -24,6 +24,17 @@ let rec envsubst varname newval env =
                               let (_, tmpe) = envsubst varname newval (numel, rest) in
                               (numel, (name, vval)::(tmpe));;
 
+let rec envstructsubst vvar vval env = 
+  match vvar with
+    | (Ast.GetStructField (name, field)) ->
+      (let act = envlookup name env in
+      match act with
+        | Ast.StructVal (x) -> (match field with
+                            | Ast.Var (y) -> envsubst name (Ast.StructVal (envsubst y vval x)) env
+                            | _ -> envsubst name (Ast.StructVal (envstructsubst field vval x)) env)
+        | _ -> raiseErr ["Variable"; name; "is not a struct!"])
+    | _ -> raiseErr ["Undefined behavior!"];;
+
 let rec envcut numel (actnumel, env) = if numel = actnumel then 
                                          (numel,  env)
                                        else

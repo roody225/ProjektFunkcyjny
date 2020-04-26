@@ -36,6 +36,7 @@ let rec unparsep program prefix =
     | WhileExpr (cond, block) -> String.concat "" [prefix; "while "; unparsea cond; " {\n"; unparsep block (newp prefix); prefix; "};\n"]
     | IfExpr (cond, t, f) -> String.concat "" [prefix; "if "; unparsea cond; " {\n"; unparsep t (newp prefix); prefix; "}\n"; prefix; "else {\n"; unparsep f (newp prefix); prefix; "};\n"]
     | SubstExpr (name, value) -> String.concat "" [prefix; name; " = "; unparsea value; ";\n"]
-    | AssignExpr (name, value) -> String.concat "" [prefix; "let "; name; " = "; unparsea value; ";\n"];;
+    | AssignExpr (name, value) -> String.concat "" [prefix; "let "; name; " = "; unparsea value; ";\n"]
+    | SubstStructExpr (s, value) -> String.concat "" [prefix; unparsea s; " = "; unparsea value; ";\n"];;
 
 let prettyprint p = Printf.printf "%s" (unparsep p "");;

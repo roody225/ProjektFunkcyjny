@@ -80,6 +80,7 @@ args:
 pexpr: 
   | LET; x = ID; EQUALS; e1 = aexpr; SEMICOLON { AssignExpr (x, e1) }
   | x = ID; EQUALS; e = aexpr; SEMICOLON { SubstExpr (x, e) }
+  | x = getstructf; EQUALS; e = aexpr; SEMICOLON { SubstStructExpr (x, e) }
   | IF; e = aexpr; e1 = block; ELSE; e2 = block; SEMICOLON { IfExpr (e, e1, e2) }
   | WHILE; e = aexpr; e1 = block; SEMICOLON { WhileExpr (e, e1) }
   | PROCEDURE; x = ID; dal = dargslist; COLLON; e = aexpr; e1 = block; SEMICOLON { DeclareProcExpr (x, dal, e, e1) }
