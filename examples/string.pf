@@ -1,0 +1,4 @@
+let x = "AlaMaKota";
+let y = "KotMaAle";
+let z = x + y;
+let a = x < y;

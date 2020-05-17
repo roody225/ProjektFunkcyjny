@@ -5,6 +5,7 @@ let unparsev value =
     | Null -> "null"
     | NumberVal (c) -> string_of_int c
     | BoolVal (b) -> string_of_bool b
+    | StringVal (s) -> String.concat "" ["\""; s; "\""]
     | _ -> "something went wrong";;
 
 let rec unparsea expr = 

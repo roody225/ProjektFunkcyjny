@@ -34,6 +34,8 @@ open Ast
 %token DOT
 %token NULL
 %token WITH
+%token QUOTES
+%token STRING
 
 %right NOT
 %left LEQ GEQ LT GT EQ
@@ -50,6 +52,7 @@ aexpr:
   | i = INT { Const (NumberVal i) }
   | TRUE { Const (BoolVal true) }
   | FALSE { Const (BoolVal false) }
+  | QUOTES; s = ID; QUOTES {Const (StringVal s)}
   | x = ID { Var x }
   | e1 = aexpr; LT; e2 = aexpr { Lt (e1, e2) }
   | e1 = aexpr; LEQ; e2 = aexpr { Leq (e1, e2) }

@@ -1,6 +1,7 @@
 type value = 
   | NumberVal of int 
   | BoolVal of bool
+  | StringVal of string
   | Procedure of string list * aexpr * pexpr * (int * (string * value) list) ref
   | StructVal of (int * (string * value) list)
   | StructTemplate of string list

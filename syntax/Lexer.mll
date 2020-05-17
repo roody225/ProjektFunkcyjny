@@ -40,6 +40,7 @@ rule read =
   | "."   { DOT }
   | "null" { NULL }
   | "with" { WITH }
+  | "\""  { QUOTES }
   | id    { ID (Lexing.lexeme lexbuf) }
   | int   { INT (int_of_string (Lexing.lexeme lexbuf)) }
   | eof   { EOF }

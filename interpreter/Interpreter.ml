@@ -18,6 +18,7 @@ let rec eval expr env =
     | Var v -> envlookup v env
     | Add (l, r) -> (match (eval l env, eval r env) with
                       | (NumberVal left, NumberVal right) -> NumberVal (left + right)
+                      | (StringVal left, StringVal right) -> StringVal ((String.concat "" [left; right]))
                       | _ -> raiseErr ["Bad argument in + operator!"])
     | Sub (l, r) -> (match (eval l env, eval r env) with
                       | (NumberVal left, NumberVal right) -> NumberVal (left - right)
@@ -34,22 +35,27 @@ let rec eval expr env =
     | Lt (l, r) -> (match (eval l env, eval r env) with
                       | (NumberVal left, NumberVal right) -> BoolVal (left < right)
                       | (BoolVal left, BoolVal right) -> BoolVal (left < right)
+                      | (StringVal left, StringVal right) -> BoolVal (left < right)
                       | _ -> raiseErr ["Bad argument in < operator!"])     
     | Leq (l, r) -> (match (eval l env, eval r env) with
                       | (NumberVal left, NumberVal right) -> BoolVal (left <= right)
                       | (BoolVal left, BoolVal right) -> BoolVal (left <= right)
+                      | (StringVal left, StringVal right) -> BoolVal (left <= right)
                       | _ -> raiseErr ["Bad argument in <= operator!"])    
     | Gt (l, r) -> (match (eval l env, eval r env) with
                       | (NumberVal left, NumberVal right) -> BoolVal (left > right)
                       | (BoolVal left, BoolVal right) -> BoolVal (left > right)
+                      | (StringVal left, StringVal right) -> BoolVal (left > right)
                       | _ -> raiseErr ["Bad argument in > operator!"])   
     | Geq (l, r) -> (match (eval l env, eval r env) with
                       | (NumberVal left, NumberVal right) -> BoolVal (left >= right)
                       | (BoolVal left, BoolVal right) -> BoolVal (left >= right)
+                      | (StringVal left, StringVal right) -> BoolVal (left >= right)
                       | _ -> raiseErr ["Bad argument in >= operator!"])
     | Eq (l, r) -> (match (eval l env, eval r env) with
                       | (NumberVal left, NumberVal right) -> BoolVal (left = right)
                       | (BoolVal left, BoolVal right) -> BoolVal (left = right)
+                      | (StringVal left, StringVal right) -> BoolVal (left == right)
                       | _ -> raiseErr ["Bad argument in == operator!"])
     | Not e -> (match eval e env with 
                   | BoolVal b -> BoolVal (not b)
