@@ -34,6 +34,7 @@ rule read =
   | "{"   { LBRACE }
   | "}"   { RBRACE }
   | "procedure" { PROCEDURE }
+  | "recprocedure" { RECPROCEDURE }
   | ","   { COMMA }
   | ":"   { COLLON }
   | "struct" { STRUCT }

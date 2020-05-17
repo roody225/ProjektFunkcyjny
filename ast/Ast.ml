@@ -2,6 +2,8 @@ type value =
   | NumberVal of int 
   | BoolVal of bool
   | Procedure of string list * aexpr * pexpr * (int * (string * value) list)
+  | RecProcedure of string list * aexpr * pexpr * (int * (string * value) list) ref
+  (* | RecProcedure of {mutable self : value; args : string list; body : pexpr; closure : (int * (string * value) list)} *)
   | StructVal of (int * (string * value) list)
   | StructTemplate of string list
   | Null
@@ -27,6 +29,7 @@ and pexpr =
   | IfExpr of aexpr * pexpr * pexpr
   | WhileExpr of aexpr * pexpr
   | DeclareProcExpr of string * string list * aexpr * pexpr
+  | DeclareRecProcExpr of string * string list * aexpr * pexpr
   | DeclareStructExpr of string * string list
   | SubstStructExpr of aexpr * aexpr
   | Comb of pexpr * pexpr

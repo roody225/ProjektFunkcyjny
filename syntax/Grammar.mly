@@ -28,6 +28,7 @@ open Ast
 %token EQUALS
 %token EOF
 %token PROCEDURE
+%token RECPROCEDURE
 %token COMMA
 %token COLLON
 %token STRUCT
@@ -84,6 +85,7 @@ pexpr:
   | IF; e = aexpr; e1 = block; ELSE; e2 = block; SEMICOLON { IfExpr (e, e1, e2) }
   | WHILE; e = aexpr; e1 = block; SEMICOLON { WhileExpr (e, e1) }
   | PROCEDURE; x = ID; dal = dargslist; COLLON; e = aexpr; e1 = block; SEMICOLON { DeclareProcExpr (x, dal, e, e1) }
+  | RECPROCEDURE; x = ID; dal = dargslist; COLLON; e = aexpr; e1 = block; SEMICOLON { DeclareRecProcExpr (x, dal, e, e1) }
   | STRUCT; x = ID; sb = structbody; SEMICOLON {DeclareStructExpr (x, sb)}
 
 structbody:

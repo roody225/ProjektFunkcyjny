@@ -57,6 +57,8 @@ let rec eval expr env =
     | EvalProc (name, argsvals) -> (match envlookup name env with 
                                      | Procedure (argslist, returnval, body, closure) ->
                                        eval returnval (interp body (mapargs argslist (List.map (fun a -> eval a env) argsvals) closure))
+                                     | RecProcedure (argslist, returnval, body, closure) ->
+                                       eval returnval (interp body (mapargs argslist (List.map (fun a -> eval a env) argsvals) !closure))
                                      | _ -> raiseErr [name; "is not a procedure!"])
     | MakeStruct (name, fieldsvals) -> (match envlookup name env with
                                          | StructTemplate (fields) ->
@@ -93,6 +95,13 @@ and interp progtree env =
                                                     env)
                                   | _ -> env)
     | DeclareProcExpr (name, args, returnexpr, body) -> envadd name (Procedure (args, returnexpr, body, env)) env
+    | DeclareRecProcExpr (name, args, returnexpr, body) -> (let newenv = envadd name (RecProcedure (args, returnexpr, body, ref env)) env in
+                                                           match newenv with
+                                                             | (_, (_, RecProcedure(_, _, _, closure))::_) -> begin
+                                                                                                                closure := newenv;
+                                                                                                                newenv
+                                                             end
+                                                             | _ -> raiseErr ["Undefined Behavior!"])              
     | DeclareStructExpr (name, fields) -> envadd name (StructTemplate fields) env
     | SubstStructExpr (s, vval) -> envstructsubst s (eval vval env) env;;
 
