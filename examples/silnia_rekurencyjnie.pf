@@ -1,4 +1,4 @@
-recprocedure silnia(n) : res {
+procedure silnia(n) : res {
   let res = 0;
   if n == 1 {
     res = 1;

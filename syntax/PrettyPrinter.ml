@@ -33,7 +33,6 @@ let rec unparsep program prefix =
     | Comb (e1, e2) -> String.concat "" [unparsep e1 prefix; unparsep e2 prefix;]
     | DeclareStructExpr (name, fields) -> String.concat "" [prefix; "struct "; name; " {"; String.concat ", " fields; "};\n"]
     | DeclareProcExpr (name, args, return, block) -> String.concat "" [prefix; "procedure "; name; "("; String.concat ", " args; ") : "; unparsea return; " {\n"; unparsep block (newp prefix); prefix; "};\n"]
-    | DeclareRecProcExpr (name, args, return, block) -> String.concat "" [prefix; "recprocedure "; name; "("; String.concat ", " args; ") : "; unparsea return; " {\n"; unparsep block (newp prefix); prefix; "};\n"]
     | WhileExpr (cond, block) -> String.concat "" [prefix; "while "; unparsea cond; " {\n"; unparsep block (newp prefix); prefix; "};\n"]
     | IfExpr (cond, t, f) -> String.concat "" [prefix; "if "; unparsea cond; " {\n"; unparsep t (newp prefix); prefix; "}\n"; prefix; "else {\n"; unparsep f (newp prefix); prefix; "};\n"]
     | SubstExpr (name, value) -> String.concat "" [prefix; name; " = "; unparsea value; ";\n"]
