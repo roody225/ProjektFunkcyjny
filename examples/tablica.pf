@@ -1,0 +1,10 @@
+table(tab, 10, 0);
+
+let i = tab[9];
+
+while i < 10 {
+  tab[i] = i;
+  i = i + 1;
+}
+
+i = (tab[3] + tab[5] - tab[7] * 2) / tab[2];

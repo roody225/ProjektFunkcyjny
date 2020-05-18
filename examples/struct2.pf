@@ -1,11 +1,10 @@
-struct para {x, y};
-struct okrag {srodek, promien};
+struct para {x, y}
+struct okrag {srodek, promien}
 let z = okrag with(
           para with (3, 4),
-          5
-);
+          5);
 
-procedure foo(kolo) : kolo.promien * kolo.promien * 3 + kolo.srodek.x + kolo.srodek.y {};
+procedure foo(kolo) : kolo.promien * kolo.promien * 3 + kolo.srodek.x + kolo.srodek.y {}
 
 let polesumasrodek = foo(z);
 

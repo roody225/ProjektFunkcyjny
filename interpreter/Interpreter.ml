@@ -27,7 +27,7 @@ let rec eval expr env =
                       | (NumberVal left, NumberVal right) -> (if right=0 then 
                                                                raiseErr ["division by 0!"]
                                                              else 
-                                                               NumberVal (left + right))
+                                                               NumberVal (left / right))
                       | _ -> raiseErr ["Bad argument in / operator!"])
     | Mult (l, r) -> (match (eval l env, eval r env) with
                       | (NumberVal left, NumberVal right) -> NumberVal (left * right)
@@ -55,7 +55,7 @@ let rec eval expr env =
     | Eq (l, r) -> (match (eval l env, eval r env) with
                       | (NumberVal left, NumberVal right) -> BoolVal (left = right)
                       | (BoolVal left, BoolVal right) -> BoolVal (left = right)
-                      | (StringVal left, StringVal right) -> BoolVal (left == right)
+                      | (StringVal left, StringVal right) -> BoolVal (left = right)
                       | _ -> raiseErr ["Bad argument in == operator!"])
     | Not e -> (match eval e env with 
                   | BoolVal b -> BoolVal (not b)
@@ -71,6 +71,11 @@ let rec eval expr env =
     | GetStructField (name, field) -> (match envlookup name env with
                                         | StructVal (fields) -> eval field fields
                                         | _ -> raiseErr [name; "is not a struct!"])
+    | GetTableVal (name, i) -> (match envlookup name env with
+                                 | TableVal (x) -> (match eval i env with 
+                                                      | NumberVal (id) -> envgettableval x id
+                                                      | _ -> raiseErr ["table index must be a number!"])
+                                 | _ -> raiseErr [name; "is not a table!"])
 and interp progtree env =
   let (numel, _) = env in
   match progtree with
@@ -106,7 +111,12 @@ and interp progtree env =
                                                              end
                                                              | _ -> raiseErr ["Undefined Behavior!"])              
     | DeclareStructExpr (name, fields) -> envadd name (StructTemplate fields) env
-    | SubstStructExpr (s, vval) -> envstructsubst s (eval vval env) env;;
+    | SubstStructExpr (s, vval) -> envstructsubst s (eval vval env) env
+    | DeclareTableExpr (name, size, default) -> (if size < 1 then raiseErr ["Table size must be a positive number!"]
+                                                else envadd name (TableVal((envmaketab 0 size (eval default env)))) env)
+    | SubstTableExpr (name, i, vval) -> (match eval i env with
+                                          | NumberVal (id) -> envtablesubst name id (eval vval env) env
+                                          | _ -> raiseErr ["table index must be a number!"]);;
 
 let interp_file filename = 
   interp (Syntax.Parser.parse_file filename) emptyenv;;

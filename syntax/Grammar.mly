@@ -16,6 +16,8 @@ open Ast
 %token NOT
 %token LBRACE
 %token RBRACE
+%token LSQBRACE
+%token RSQBRACE
 %token SEMICOLON
 %token <string> ID
 %token PLUS
@@ -35,7 +37,7 @@ open Ast
 %token NULL
 %token WITH
 %token QUOTES
-%token STRING
+%token TABLE
 
 %right NOT
 %left LEQ GEQ LT GT EQ
@@ -52,7 +54,8 @@ aexpr:
   | i = INT { Const (NumberVal i) }
   | TRUE { Const (BoolVal true) }
   | FALSE { Const (BoolVal false) }
-  | QUOTES; s = ID; QUOTES {Const (StringVal s)}
+  | QUOTES; s = ID; QUOTES { Const (StringVal s) }
+  | x = ID; LSQBRACE; i = aexpr; RSQBRACE { GetTableVal (x, i) }
   | x = ID { Var x }
   | e1 = aexpr; LT; e2 = aexpr { Lt (e1, e2) }
   | e1 = aexpr; LEQ; e2 = aexpr { Leq (e1, e2) }
@@ -84,10 +87,12 @@ pexpr:
   | LET; x = ID; EQUALS; e1 = aexpr; SEMICOLON { AssignExpr (x, e1) }
   | x = ID; EQUALS; e = aexpr; SEMICOLON { SubstExpr (x, e) }
   | x = getstructf; EQUALS; e = aexpr; SEMICOLON { SubstStructExpr (x, e) }
-  | IF; e = aexpr; e1 = block; ELSE; e2 = block; SEMICOLON { IfExpr (e, e1, e2) }
-  | WHILE; e = aexpr; e1 = block; SEMICOLON { WhileExpr (e, e1) }
-  | PROCEDURE; x = ID; dal = dargslist; COLLON; e = aexpr; e1 = block; SEMICOLON { DeclareProcExpr (x, dal, e, e1) }
-  | STRUCT; x = ID; sb = structbody; SEMICOLON {DeclareStructExpr (x, sb)}
+  | x = ID; LSQBRACE; i = aexpr; RSQBRACE; EQUALS; e = aexpr; SEMICOLON { SubstTableExpr (x, i, e) } 
+  | IF; e = aexpr; e1 = block; ELSE; e2 = block { IfExpr (e, e1, e2) }
+  | WHILE; e = aexpr; e1 = block { WhileExpr (e, e1) }
+  | PROCEDURE; x = ID; dal = dargslist; COLLON; e = aexpr; e1 = block { DeclareProcExpr (x, dal, e, e1) }
+  | STRUCT; x = ID; sb = structbody { DeclareStructExpr (x, sb) }
+  | TABLE; LPAREN; x = ID; COMMA; i = INT; COMMA; e = aexpr; RPAREN; SEMICOLON { DeclareTableExpr (x, i, e) }
 
 structbody:
   | LBRACE; RBRACE { [] }

@@ -7,6 +7,6 @@ while i < x {
   while !(j == y) {
     res = res + 1;
     j = j + 1;
-  };
+  }
   i = i + 1;
-};
+}

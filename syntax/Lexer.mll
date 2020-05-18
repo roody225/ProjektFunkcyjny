@@ -33,6 +33,9 @@ rule read =
   | "!"   { NOT }
   | "{"   { LBRACE }
   | "}"   { RBRACE }
+  | "["   { LSQBRACE }
+  | "]"   { RSQBRACE }
+  | "table" { TABLE }
   | "procedure" { PROCEDURE }
   | ","   { COMMA }
   | ":"   { COLLON }

@@ -3,4 +3,4 @@ let res = 1;
 while x <= 6 {  
   res = res * x;
   x = x + 1;
-};
+}

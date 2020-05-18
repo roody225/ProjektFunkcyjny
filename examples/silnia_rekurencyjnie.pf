@@ -5,7 +5,7 @@ procedure silnia(n) : res {
   }
   else {
     res = silnia(n - 1) * n;
-  };
-};
+  }
+}
 
 let x = silnia(6);

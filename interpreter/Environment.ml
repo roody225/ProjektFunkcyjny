@@ -39,5 +39,31 @@ let rec envcut numel (actnumel, env) = if numel = actnumel then
                                          (numel,  env)
                                        else
                                          match env with
-                                           | [] -> raiseErr ["Run Time Error"]
+                                           | [] -> raiseErr ["Run Time Error!"]
                                            | (_::rest) -> envcut numel (actnumel-1, rest);; 
+
+let rec envmaketab left right vval =
+  if left >= right then Ast.Leaf
+  else if left + 1 = right then Ast.Node(left, vval, Ast.Leaf, Ast.Leaf)
+  else let mid = (left + right) / 2 in Ast.Node(mid, vval, envmaketab left mid vval, envmaketab (mid+1) right vval);;
+
+let rec envgettableval tab i=
+  match tab with
+    | Ast.Leaf -> raiseErr ["table index out of range!"]
+    | Ast.Node (id, v, left, right) -> if id = i then v
+                                   else if i < id then envgettableval left i
+                                   else envgettableval right i;;
+                  
+let rec tablesubst x i vval =
+  match x with 
+    | Ast.Leaf -> raiseErr ["table index out of range!"]
+    | Ast.Node (id, v, left, right) -> if id = i then Ast.Node(id, vval, left, right)
+                                   else if i < id then Ast.Node(id, v, tablesubst left i vval, right)
+                                   else Ast.Node(id, v, left, tablesubst right i vval);;
+          
+let envtablesubst name i vval env =
+  let tab = envlookup name env in
+  match tab with
+    | Ast.TableVal (x) -> envsubst name (Ast.TableVal((tablesubst x i vval))) env
+    | _ -> raiseErr [name; "is not a table!"];;
+                                  
