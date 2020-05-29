@@ -45,6 +45,7 @@ open Ast
 %token READSTRING
 %token FREEVAR
 %token FREEALL
+%token FOR
 
 %right NOT
 %left LEQ GEQ LT GT EQ
@@ -97,6 +98,7 @@ pexpr:
   | x = ID; LSQBRACE; i = aexpr; RSQBRACE; EQUALS; e = aexpr; SEMICOLON { SubstTableExpr (x, i, e) } 
   | IF; e = aexpr; e1 = block; ELSE; e2 = block { IfExpr (e, e1, e2) }
   | WHILE; e = aexpr; e1 = block { WhileExpr (e, e1) }
+  | FOR; x = ID; EQUALS; e = aexpr; SEMICOLON; e1 = aexpr; SEMICOLON; e2 = pexpr; e3 = block { ForExpr (x, e, e1, e2, e3) }
   | PROCEDURE; x = ID; dal = dargslist; COLLON; e = aexpr; e1 = block { DeclareProcExpr (x, dal, e, e1) }
   | STRUCT; x = ID; sb = structbody { DeclareStructExpr (x, sb) }
   | TABLE; LPAREN; x = ID; COMMA; i = aexpr; COMMA; e = aexpr; RPAREN; SEMICOLON { DeclareTableExpr (x, i, e) }

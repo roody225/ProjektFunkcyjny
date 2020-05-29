@@ -51,6 +51,7 @@ rule read =
   | "putspace" { PUTSPACE }
   | "freevar" { FREEVAR }
   | "freeall" { FREEALL }
+  | "for" { FOR }
   | id    { ID (Lexing.lexeme lexbuf) }
   | int   { INT (int_of_string (Lexing.lexeme lexbuf)) }
   | eof   { EOF }

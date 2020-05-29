@@ -118,6 +118,27 @@ and interp progtree env =
                                                   else
                                                     env)
                                   | _ -> env)
+    | ForExpr (it, vval, cond, modf, body) -> envcut numel (let newenv = envadd it (eval vval env) env in
+                                              match eval cond newenv with
+                                                | NumberVal v -> (if v <> 0 then
+                                                                    interp (LoopExpr (cond, modf, body)) (interp (Comb (body, modf)) newenv)
+                                                                  else
+                                                                    newenv)
+                                                | BoolVal b -> (if b then
+                                                                  interp (LoopExpr (cond, modf, body)) (interp (Comb (body, modf)) newenv)
+                                                                else
+                                                                  newenv)
+                                                | _ -> env)
+    | LoopExpr (cond, modf, body) -> envcut numel (match eval cond env with
+                                      | NumberVal v -> (if v <> 0 then
+                                                          interp (LoopExpr (cond, modf, body)) (interp (Comb (body, modf)) env)
+                                                        else
+                                                          env)
+                                      | BoolVal b -> (if b then
+                                                          interp (LoopExpr (cond, modf, body)) (interp (Comb (body, modf)) env)
+                                                        else
+                                                          env)
+                                      | _ -> env)
     | DeclareProcExpr (name, args, returnexpr, body) -> (let newenv = envadd name (Procedure (args, returnexpr, body, ref env)) env in
                                                            match newenv with
                                                              | (_, (_, Procedure(_, _, _, closure))::_) -> begin

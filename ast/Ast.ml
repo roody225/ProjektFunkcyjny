@@ -30,6 +30,8 @@ and pexpr =
   | SubstExpr of string * aexpr
   | IfExpr of aexpr * pexpr * pexpr
   | WhileExpr of aexpr * pexpr
+  | ForExpr of string * aexpr * aexpr * pexpr * pexpr
+  | LoopExpr of aexpr * pexpr * pexpr
   | DeclareProcExpr of string * string list * aexpr * pexpr
   | DeclareStructExpr of string * string list
   | DeclareTableExpr of string * aexpr * aexpr
