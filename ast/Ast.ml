@@ -40,5 +40,7 @@ and pexpr =
   | PutSpaceExpr
   | ReadIntExpr of string
   | ReadStringExpr of string
+  | FreeVarExpr of string
+  | FreeAllExpr
   | Comb of pexpr * pexpr
   | Skip;;

@@ -46,6 +46,8 @@ let rec unparsep program prefix =
     | PutEndlExpr -> String.concat "" [prefix; "putendl();\n"]
     | PutSpaceExpr -> String.concat "" [prefix; "putspace();\n"]
     | ReadIntExpr (name) -> String.concat "" [prefix; "readint("; name; ");\n"]
-    | ReadStringExpr (name) -> String.concat "" [prefix; "readstr("; name; ");\n"];;
+    | ReadStringExpr (name) -> String.concat "" [prefix; "readstr("; name; ");\n"]
+    | FreeVarExpr (name) -> String.concat "" [prefix; "freevar("; name; ");\n"]
+    | FreeAllExpr -> String.concat "" [prefix; "freeall();\n"];;
 
 let prettyprint p = Printf.printf "%s" (unparsep p "");;

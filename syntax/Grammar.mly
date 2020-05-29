@@ -43,6 +43,8 @@ open Ast
 %token PUTSPACE
 %token READINT
 %token READSTRING
+%token FREEVAR
+%token FREEALL
 
 %right NOT
 %left LEQ GEQ LT GT EQ
@@ -103,6 +105,8 @@ pexpr:
   | PUTSPACE; LPAREN; RPAREN; SEMICOLON { PutSpaceExpr }
   | READINT; LPAREN; x = ID; RPAREN; SEMICOLON { ReadIntExpr (x) }
   | READSTRING; LPAREN; x = ID; RPAREN; SEMICOLON { ReadStringExpr (x) }
+  | FREEVAR; LPAREN; x = ID; RPAREN; SEMICOLON { FreeVarExpr (x) }
+  | FREEALL; LPAREN; RPAREN; SEMICOLON { FreeAllExpr }
 
 structbody:
   | LBRACE; RBRACE { [] }

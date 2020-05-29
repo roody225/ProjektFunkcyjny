@@ -67,3 +67,7 @@ let envtablesubst name i vval env =
     | Ast.TableVal (x) -> envsubst name (Ast.TableVal((tablesubst x i vval))) env
     | _ -> raiseErr [name; "is not a table!"];;
                                   
+let rec envdrop varname env = 
+  match env with
+    | (_, []) -> raiseErr ["Variable"; varname; "not in scope!"]
+    | (x, (name, vval)::rest) -> if varname = name then (x-1, rest) else envadd name vval (envdrop name (x-1, rest));;

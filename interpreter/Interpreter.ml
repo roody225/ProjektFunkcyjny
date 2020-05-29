@@ -138,7 +138,9 @@ and interp progtree env =
     | PutEndlExpr -> begin print_string "\n"; env end 
     | PutSpaceExpr -> begin print_string " "; env end
     | ReadIntExpr (name) -> let x = read_int () in envsubst name (NumberVal (x)) env
-    | ReadStringExpr (name) -> let x = read_line () in envsubst name (StringVal (x)) env;;
+    | ReadStringExpr (name) -> let x = read_line () in envsubst name (StringVal (x)) env
+    | FreeVarExpr (name) -> envdrop name env
+    | FreeAllExpr -> emptyenv;;
 
 let interp_file filename = 
   interp (Syntax.Parser.parse_file filename) emptyenv;;
