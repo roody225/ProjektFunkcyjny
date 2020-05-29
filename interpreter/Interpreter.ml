@@ -10,7 +10,22 @@ let rec mapargs argslist argsvals env =
   match (argslist, argsvals) with
     | ([], []) -> env
     | (name::alist, vval::aval) -> mapargs alist aval (numel+1, (name, vval)::vars)
-    | (_, _) -> raiseErr ["too few/many arguments in a function/struct!"];;
+    | (_, _) -> raiseErr ["Too few/many arguments in a function/struct!"];;
+
+let rec print_list argsvals =
+  let space () = print_string " " in
+  match argsvals with
+    | [] -> ()
+    | x::[] -> (match x with 
+                  | NumberVal (x) -> begin print_int x; () end
+                  | BoolVal (x) -> begin if x then print_string "true" else print_string "false"; () end
+                  | StringVal (x) -> begin print_string x; () end
+                  | _ -> raiseErr ["An argument given to a print() built-in function must be a number or boolean value or string!"])
+    | x::rest -> (match x with 
+                    | NumberVal (x) -> begin print_int x; space (); print_list rest end
+                    | BoolVal (x) -> begin if x then print_string "true" else print_string "false"; space (); print_list rest end
+                    | StringVal (x) -> begin print_string x; space (); print_list rest end
+                    | _ -> raiseErr ["An argument given to a print() built-in function must be a number or boolean value or string!"]);;
 
 let rec eval expr env = 
   match expr with
@@ -25,7 +40,7 @@ let rec eval expr env =
                       | _ -> raiseErr ["Bad argument in - operator!"])
     | Div (l, r) -> (match (eval l env, eval r env) with
                       | (NumberVal left, NumberVal right) -> (if right=0 then 
-                                                               raiseErr ["division by 0!"]
+                                                               raiseErr ["Division by 0!"]
                                                              else 
                                                                NumberVal (left / right))
                       | _ -> raiseErr ["Bad argument in / operator!"])
@@ -74,7 +89,7 @@ let rec eval expr env =
     | GetTableVal (name, i) -> (match envlookup name env with
                                  | TableVal (x) -> (match eval i env with 
                                                       | NumberVal (id) -> envgettableval x id
-                                                      | _ -> raiseErr ["table index must be a number!"])
+                                                      | _ -> raiseErr ["Table index must be a number!"])
                                  | _ -> raiseErr [name; "is not a table!"])
 and interp progtree env =
   let (numel, _) = env in
@@ -112,11 +127,18 @@ and interp progtree env =
                                                              | _ -> raiseErr ["Undefined Behavior!"])              
     | DeclareStructExpr (name, fields) -> envadd name (StructTemplate fields) env
     | SubstStructExpr (s, vval) -> envstructsubst s (eval vval env) env
-    | DeclareTableExpr (name, size, default) -> (if size < 1 then raiseErr ["Table size must be a positive number!"]
-                                                else envadd name (TableVal((envmaketab 0 size (eval default env)))) env)
+    | DeclareTableExpr (name, s, default) -> (match eval s env with
+                                                  | NumberVal (size) -> (if size < 1 then raiseErr ["Table size must be a positive number!"]
+                                                                        else envadd name (TableVal((envmaketab 0 size (eval default env)))) env)
+                                                  | _ -> raiseErr["Table size must be a number!"])
     | SubstTableExpr (name, i, vval) -> (match eval i env with
                                           | NumberVal (id) -> envtablesubst name id (eval vval env) env
-                                          | _ -> raiseErr ["table index must be a number!"]);;
+                                          | _ -> raiseErr ["Table index must be a number!"])
+    | PrintExpr (argsvals) -> begin print_list (List.map (fun a -> eval a env) argsvals); env end
+    | PutEndlExpr -> begin print_string "\n"; env end 
+    | PutSpaceExpr -> begin print_string " "; env end
+    | ReadIntExpr (name) -> let x = read_int () in envsubst name (NumberVal (x)) env
+    | ReadStringExpr (name) -> let x = read_line () in envsubst name (StringVal (x)) env;;
 
 let interp_file filename = 
   interp (Syntax.Parser.parse_file filename) emptyenv;;

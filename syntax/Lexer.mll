@@ -44,6 +44,11 @@ rule read =
   | "null" { NULL }
   | "with" { WITH }
   | "\""  { QUOTES }
+  | "print" { PRINT }
+  | "readint" { READINT }
+  | "readstr" { READSTRING }
+  | "putendl" { PUTENDL }
+  | "putspace" { PUTSPACE }
   | id    { ID (Lexing.lexeme lexbuf) }
   | int   { INT (int_of_string (Lexing.lexeme lexbuf)) }
   | eof   { EOF }

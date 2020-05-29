@@ -32,8 +32,13 @@ and pexpr =
   | WhileExpr of aexpr * pexpr
   | DeclareProcExpr of string * string list * aexpr * pexpr
   | DeclareStructExpr of string * string list
-  | DeclareTableExpr of string * int * aexpr
+  | DeclareTableExpr of string * aexpr * aexpr
   | SubstTableExpr of string * aexpr * aexpr
   | SubstStructExpr of aexpr * aexpr
+  | PrintExpr of aexpr list
+  | PutEndlExpr
+  | PutSpaceExpr
+  | ReadIntExpr of string
+  | ReadStringExpr of string
   | Comb of pexpr * pexpr
   | Skip;;

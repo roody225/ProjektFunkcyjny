@@ -1,0 +1,35 @@
+let x = 0;
+print("podaj", "wysokosc", "choinki");
+putendl();
+readint(x);
+
+let y = "X";
+print("podaj", "literke");
+putendl();
+readstr(y);
+
+let i = 0;
+while i < x {
+  let j = x - i;
+  while j > 0 {
+    putspace();
+    j = j - 1;
+  }
+  while j < 2 * i + 1 {
+    print(y);
+    j = j + 1;
+  }
+  putendl();
+  i = i + 1;
+}
+i = 0;
+while i < x/4 {
+  let j = 0;
+  while j < x - 1 {
+    putspace();
+    j = j + 1;
+  }
+  print(y + y + y);
+  putendl();
+  i = i + 1;
+}

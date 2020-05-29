@@ -40,7 +40,12 @@ let rec unparsep program prefix =
     | SubstExpr (name, value) -> String.concat "" [prefix; name; " = "; unparsea value; ";\n"]
     | AssignExpr (name, value) -> String.concat "" [prefix; "let "; name; " = "; unparsea value; ";\n"]
     | SubstStructExpr (s, value) -> String.concat "" [prefix; unparsea s; " = "; unparsea value; ";\n"]
-    | DeclareTableExpr (name, size, default) -> String.concat "" [prefix; "table("; name; ", "; string_of_int size; ", "; unparsea default; ");\n"]
-    | SubstTableExpr (name, i, value) -> String.concat "" [prefix; name; "["; unparsea i; "] = "; unparsea value; ";\n"];;
+    | DeclareTableExpr (name, size, default) -> String.concat "" [prefix; "table("; name; ", "; unparsea size; ", "; unparsea default; ");\n"]
+    | SubstTableExpr (name, i, value) -> String.concat "" [prefix; name; "["; unparsea i; "] = "; unparsea value; ";\n"]
+    | PrintExpr (argsvals) -> String.concat "" [prefix; "print("; String.concat ", " (List.map unparsea argsvals); ");\n"]
+    | PutEndlExpr -> String.concat "" [prefix; "putendl();\n"]
+    | PutSpaceExpr -> String.concat "" [prefix; "putspace();\n"]
+    | ReadIntExpr (name) -> String.concat "" [prefix; "readint("; name; ");\n"]
+    | ReadStringExpr (name) -> String.concat "" [prefix; "readstr("; name; ");\n"];;
 
 let prettyprint p = Printf.printf "%s" (unparsep p "");;
